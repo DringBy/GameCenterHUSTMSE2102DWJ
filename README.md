@@ -15,3 +15,7 @@ This is a Game Center program containing 2048, Mine Sweeper and Snake.
 We also designed the score and ranking function.
 
  Other functions are to be developed.
+
+---
+
+Please use gbk as the char set to open source files.
