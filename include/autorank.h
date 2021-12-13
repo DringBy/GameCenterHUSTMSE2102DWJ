@@ -7,75 +7,75 @@
 #include <algorithm>
 #include <iostream>
 
-//å¾—åˆ†æ•°æ®å—
+//µÃ·ÖÊı¾İ¿é
 class scoreblock
 {
 friend class scoredealer;
 
 public:
 
-    //é‡è½½å¤§äºè¿ç®—ç¬¦ ä»¥åˆ†æ•°ä¸ºåŸºå‡†
+    //ÖØÔØ´óÓÚÔËËã·û ÒÔ·ÖÊıÎª»ù×¼
     bool operator > (const scoreblock& obj) const;
-    //é‡è½½å°äºè¿ç®—ç¬¦ ä»¥åˆ†æ•°ä¸ºåŸºå‡†
+    //ÖØÔØĞ¡ÓÚÔËËã·û ÒÔ·ÖÊıÎª»ù×¼
     bool operator < (const scoreblock& obj) const;
-    //é‡è½½ç­‰äºè¿ç®—ç¬¦ ä»¥åˆ†æ•°ä¸ºåŸºå‡†
+    //ÖØÔØµÈÓÚÔËËã·û ÒÔ·ÖÊıÎª»ù×¼
     bool operator == (const scoreblock& obj) const;
 
-    //ä¸€èˆ¬æ„é€ å‡½æ•°
+    //Ò»°ã¹¹Ôìº¯Êı
     scoreblock(const std::string &Name, time_t PlayTime, unsigned long Score);
-    //é»˜è®¤æ„é€ å‡½æ•°
+    //Ä¬ÈÏ¹¹Ôìº¯Êı
     scoreblock();
 
-    //ä»¥å­—ç¬¦ä¸²å½¢å¼è¾“å‡ºåˆ†æ•°ä¿¡æ¯
+    //ÒÔ×Ö·û´®ĞÎÊ½Êä³ö·ÖÊıĞÅÏ¢
     const char* GetStrInf() const;
 
 private:
 
-    //ç©å®¶åç§°
+    //Íæ¼ÒÃû³Æ
     std::string m_strName;
-    //è®¡å½•æ—¶é—´
+    //¼ÆÂ¼Ê±¼ä
     time_t m_ttPlayTime;
-    //ç©å®¶å¾—åˆ†
+    //Íæ¼ÒµÃ·Ö
     unsigned long m_ulScore;
 
-    //è®°å½•åˆ†æ•°ä¿¡æ¯çš„ä¸´æ—¶å­—ç¬¦ä¸²
+    //¼ÇÂ¼·ÖÊıĞÅÏ¢µÄÁÙÊ±×Ö·û´®
     static char s_lpTmpStr[256];
 
 };
 
-//å¤„ç†å¾—åˆ†æ•°æ®å—
+//´¦ÀíµÃ·ÖÊı¾İ¿é
 class scoredealer
 {
 public:
 
-    //è¾“å‡ºåˆ†æ•°æ–‡ä»¶
-    //path :    è¾“å‡ºæ–‡ä»¶åœ°å€
-    //è¿”å›å€¼:   æ–‡ä»¶å¼‚å¸¸æ—¶è¿”å›false
+    //Êä³ö·ÖÊıÎÄ¼ş
+    //path :    Êä³öÎÄ¼şµØÖ·
+    //·µ»ØÖµ:   ÎÄ¼şÒì³£Ê±·µ»Øfalse
     static bool WriteFile(const char* path);
-    //å†™å…¥åˆ†æ•°æ–‡ä»¶
-    //path :    è¾“å‡ºæ–‡ä»¶åœ°å€
-    //è¿”å›å€¼:   æ–‡ä»¶å¼‚å¸¸æ—¶è¿”å›false
+    //Ğ´Èë·ÖÊıÎÄ¼ş
+    //path :    Êä³öÎÄ¼şµØÖ·
+    //·µ»ØÖµ:   ÎÄ¼şÒì³£Ê±·µ»Øfalse
     static bool ReadFile(const char* path);
 
-    //è¾“å‡ºåˆ†æ•°æ’å
-    //layer:    è¾“å‡ºæ—¶å„è¡Œé¢„è¾“å‡ºçš„åˆ¶è¡¨ç¬¦æ•°
+    //Êä³ö·ÖÊıÅÅÃû
+    //layer:    Êä³öÊ±¸÷ĞĞÔ¤Êä³öµÄÖÆ±í·ûÊı
     static void PrintList(int layer);
-    //æ’å…¥åˆ†æ•°å—
+    //²åÈë·ÖÊı¿é
     static void Insert(const scoreblock& obj);
 
 private:
 
-    //éšè—æ„é€ å‡½æ•°
+    //Òş²Ø¹¹Ôìº¯Êı
     scoredealer();
 
-    //å­˜å‚¨æ•°æ®å—çš„æ•°ç»„ï¼ˆå‘é‡ï¼‰
+    //´æ´¢Êı¾İ¿éµÄÊı×é£¨ÏòÁ¿£©
     static std::vector<scoreblock> s_vScoreList;
-    //è¢«æ“ä½œçš„æ–‡ä»¶
+    //±»²Ù×÷µÄÎÄ¼ş
     static std::fstream s_fFile;
 
-    //å†™å…¥ä¸€ä¸ªæ•°æ®å—
+    //Ğ´ÈëÒ»¸öÊı¾İ¿é
     static void WriteData(const scoreblock&);
-    //è¯»å‡ºä¸€ä¸ªæ•°æ®å—
+    //¶Á³öÒ»¸öÊı¾İ¿é
     static void ReadData(scoreblock&);
 
 };

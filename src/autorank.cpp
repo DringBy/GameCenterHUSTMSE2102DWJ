@@ -1,6 +1,6 @@
 #include "autorank.h"
 
-//åˆå§‹åŒ–é™æ€æˆå‘˜
+//³õÊ¼»¯¾²Ì¬³ÉÔ±
 const int c_iTsSize = 256;
 char scoreblock::s_lpTmpStr[c_iTsSize] = {};
 
@@ -36,14 +36,14 @@ m_ulScore(0)
 
 const char* scoreblock::GetStrInf() const
 {
-    //å°†æ—¶é—´è½¬æ¢ä¸ºæ ¼å¼åŒ–çš„å­—ç¬¦ä¸²
+    //½«Ê±¼ä×ª»»Îª¸ñÊ½»¯µÄ×Ö·û´®
     tm tmTimeStruct;
     localtime_s(&tmTimeStruct, &m_ttPlayTime);
 
     char lpTimeStr[20];
     strftime(lpTimeStr, 20, "%Y-%m-%d %H:%M:%S", &tmTimeStruct);
 
-    //æ ¼å¼åŒ–è¾“å‡º
+    //¸ñÊ½»¯Êä³ö
     sprintf_s(s_lpTmpStr, c_iTsSize, "%-12u%s     %s\n", m_ulScore, lpTimeStr, m_strName.c_str());
 
     return s_lpTmpStr;
@@ -54,7 +54,7 @@ scoredealer::scoredealer()
 
 void scoredealer::WriteData(const scoreblock& obj)
 {
-    //å†™å…¥unsigned longå‹çš„äºŒè¿›åˆ¶æ•°æ® ååŒ
+    //Ğ´Èëunsigned longĞÍµÄ¶ş½øÖÆÊı¾İ ºóÍ¬
     char* ptr = (char*)&obj.m_ulScore;
 
     for(int i = 0; i < sizeof(unsigned long); i++)
@@ -87,7 +87,7 @@ bool scoredealer::WriteFile(const char* path)
             s_fFile.put(ptr[i]);
         }
 
-        //c11ä¸‹çš„forè¿­ä»£è¯­æ³•
+        //c11ÏÂµÄforµü´úÓï·¨
         for(auto i : s_vScoreList)
         {
             WriteData(i);
@@ -98,7 +98,7 @@ bool scoredealer::WriteFile(const char* path)
         is_suc = false;
     }
 
-    //å…³é—­æ–‡ä»¶æ¸…é™¤æ•°æ®
+    //¹Ø±ÕÎÄ¼şÇå³ıÊı¾İ
     s_vScoreList.clear();
     s_fFile.close();
     s_fFile.clear();
@@ -110,7 +110,7 @@ void scoredealer::ReadData(scoreblock& obj)
 {
     char ptr[sizeof(time_t)];
 
-    //è¯»å–unsigned longå‹çš„äºŒè¿›åˆ¶æ•°æ® ååŒ
+    //¶ÁÈ¡unsigned longĞÍµÄ¶ş½øÖÆÊı¾İ ºóÍ¬
     s_fFile.read(ptr, sizeof(unsigned long));
     obj.m_ulScore = *(unsigned long*)ptr;
 
@@ -144,7 +144,7 @@ bool scoredealer::ReadFile(const char* path)
         is_suc = false;
     }
 
-    //å…³é—­æ–‡ä»¶
+    //¹Ø±ÕÎÄ¼ş
     s_fFile.close();
     s_fFile.clear();
 
@@ -155,7 +155,7 @@ void scoredealer::PrintList(int layer)
 {
     std::sort(s_vScoreList.rbegin(), s_vScoreList.rend());
     
-    //lpLayerStrå‚¨å­˜é¢„æ”¾ç½®çš„åˆ¶è¡¨ç¬¦
+    //lpLayerStr´¢´æÔ¤·ÅÖÃµÄÖÆ±í·û
     char* lpLayerStr = new char[layer + 1];
     for(int i = 0; i < layer; i++)
     {
