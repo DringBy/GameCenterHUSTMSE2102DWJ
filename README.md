@@ -19,3 +19,7 @@ We also designed the score and ranking function.
 ---
 
 Please use gbk as the char set to open source files.
+
+---
+
+Example for each part can find in example.

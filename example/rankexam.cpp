@@ -1,6 +1,6 @@
-#include "autorank.h"
+#include "../include/autorank.h"
 
-int main()
+int rankmain()
 {
     //写入数据示例
     scoredealer::Insert(scoreblock{"n123", time(NULL) - 100, 100ul});

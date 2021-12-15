@@ -1,10 +1,9 @@
-#include <iostream>
-#include <Windows.h>
-#include <time.h>
-#include <string.h>
-#include <conio.h>
+#include "Snake.h"
 
 using namespace std;
+
+snake::SnakeBody * SnakeHead, *Node, *SnakeEnd;
+snake::FoodInfo Food;
 
 const int MapWidth = 68;
 const int MapHeight = 26;
@@ -12,35 +11,7 @@ const char Block[] = "■";
 const char FoodGraph[] = "⊙";
 int SPEED = 40, Direction = 4; //蛇的朝向,1234分别对应上左下右
 
-struct SnakeBody //蛇的躯干，用链表存储
-{
-    COORD pos;
-    SnakeBody *next;
-} * SnakeHead, *Node, *SnakeEnd;
-
-struct FoodInfo
-{
-    COORD pos;
-} Food;
-
-void gotoxy(int x, int y);          //移动光标
-void setmap(int width, int height); //创建地图
-void printBlock(int x, int y);      //打印方块
-void printFood(int x, int y);       //打印食物
-void printSpace(int x, int y);      //打印空格
-void creatFood();                   //随机生成食物
-void welcome();                     //欢迎界面(未完成)
-void GameInit();                    //游戏初始化
-void MainLoop();                    //主体循环
-void HeadJudge();                   //判断蛇头前方是什么
-bool Reaction(char kbin);           //执行键盘输入的指令,同时返回一个bool值表示该指令是否可执行
-int XYJudge(int x, int y);          //判断xy格内有什么
-void Moving();
-void DeleteEnd();
-void Eating();
-void GameOver();                    //游戏结束(未完成)
-
-int main()
+int snake::snakemain()
 {
     welcome();
     GameInit();
@@ -48,7 +19,7 @@ int main()
     return 0;
 }
 
-void gotoxy(int x, int y)
+void snake::gotoxy(int x, int y)
 {
     COORD pos;
     //移动光标
@@ -64,28 +35,28 @@ void gotoxy(int x, int y)
     return;
 }
 
-void printBlock(int x, int y)
+void snake::printBlock(int x, int y)
 {
     gotoxy(x, y);
     cout << Block;
     return;
 }
 
-void printFood(int x, int y)
+void snake::printFood(int x, int y)
 {
     gotoxy(x, y);
     cout << FoodGraph;
     return;
 }
 
-void printSpace(int x, int y)
+void snake::printSpace(int x, int y)
 {
     gotoxy(x, y);
     cout << "　";
     return;
 }
 
-void creatFood()
+void snake::creatFood()
 {
     bool Flag = false;
     while (!Flag)
@@ -108,13 +79,13 @@ void creatFood()
     return;
 }
 
-void welcome()
+void snake::welcome()
 {
     system("pause");
     return;
 }
 
-void setmap(int width, int height)
+void snake::setmap(int width, int height)
 {
     system("cls");
     int px, py;
@@ -134,7 +105,7 @@ void setmap(int width, int height)
     return;
 }
 
-void GameInit()
+void snake::GameInit()
 {
     srand((int)time(NULL));
     setmap(MapWidth, MapHeight);
@@ -154,7 +125,7 @@ void GameInit()
     return;
 }
 
-void DeleteEnd()
+void snake::DeleteEnd()
 {
     SnakeBody *jNode;
     jNode = SnakeHead;
@@ -167,7 +138,7 @@ void DeleteEnd()
     return;
 }
 
-void Moving()
+void snake::Moving()
 {
     Node = (SnakeBody *)malloc(sizeof(SnakeBody));
     Node->next = SnakeHead;
@@ -203,21 +174,21 @@ void Moving()
     return;
 }
 
-void Eating()
+void snake::Eating()
 {
     Moving();
     creatFood();
     return;
 }
 
-void GameOver()
+void snake::GameOver()
 {
     while (1)
         ;
     return;
 }
 
-void HeadJudge()
+void snake::HeadJudge()
 {
     int HeadXYInfo;
     switch (Direction)
@@ -259,7 +230,7 @@ void HeadJudge()
     return;
 }
 
-int XYJudge(int x, int y)
+int snake::XYJudge(int x, int y)
 {
     if (Food.pos.X == x && Food.pos.Y == y)
         return 1;
@@ -275,7 +246,7 @@ int XYJudge(int x, int y)
     return 0;
 }
 
-bool Reaction(char kbin)
+bool snake::Reaction(char kbin)
 {
     switch (kbin)
     {
@@ -312,7 +283,7 @@ bool Reaction(char kbin)
     }
 }
 
-void MainLoop()
+void snake::MainLoop()
 {
     DWORD Time_start, Time_delta, Time_refresh, Time_lastframe;
     bool GotCommand = false;

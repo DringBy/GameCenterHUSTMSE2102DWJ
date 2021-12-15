@@ -1,3 +1,4 @@
 #cmake/vscode environment
 build
 .vscode
+src/main.cpp
