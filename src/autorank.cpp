@@ -36,15 +36,15 @@ m_ulScore(0)
 
 const char* scoreblock::GetStrInf() const
 {
-    //将时间转换为格式化的字符串
-    tm tmTimeStruct;
-    localtime_s(&tmTimeStruct, &m_ttPlayTime);
-
     char lpTimeStr[20];
-    strftime(lpTimeStr, 20, "%Y-%m-%d %H:%M:%S", &tmTimeStruct);
+
+    //将时间转换为格式化的字符串
+    tm *tmTimeStruct = localtime(&m_ttPlayTime);
+
+    strftime(lpTimeStr, 20, "%Y-%m-%d %H:%M:%S", tmTimeStruct);
 
     //格式化输出
-    sprintf_s(s_lpTmpStr, c_iTsSize, "%-12u%s     %s\n", m_ulScore, lpTimeStr, m_strName.c_str());
+    sprintf(s_lpTmpStr, "%-12u%s     %s\n", m_ulScore, lpTimeStr, m_strName.c_str());
 
     return s_lpTmpStr;
 }
