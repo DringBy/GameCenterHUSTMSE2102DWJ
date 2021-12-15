@@ -7,7 +7,7 @@
 
 namespace snake{
 
-struct SnakeBody //è›‡çš„èº¯å¹²ï¼Œç”¨é“¾è¡¨å­˜å‚¨
+struct SnakeBody //ÉßµÄÇû¸É£¬ÓÃÁ´±í´æ´¢
 {
     COORD pos;
     SnakeBody *next;
@@ -18,22 +18,22 @@ struct FoodInfo
     COORD pos;
 };
 
-void gotoxy(int x, int y);          //ç§»åŠ¨å…‰æ ‡
-void setmap(int width, int height); //åˆ›å»ºåœ°å›¾
-void printBlock(int x, int y);      //æ‰“å°æ–¹å—
-void printFood(int x, int y);       //æ‰“å°é£Ÿç‰©
-void printSpace(int x, int y);      //æ‰“å°ç©ºæ ¼
-void creatFood();                   //éšæœºç”Ÿæˆé£Ÿç‰©
-void welcome();                     //æ¬¢è¿ç•Œé¢(æœªå®Œæˆ)
-void GameInit();                    //æ¸¸æˆåˆå§‹åŒ–
-void MainLoop();                    //ä¸»ä½“å¾ªç¯
-void HeadJudge();                   //åˆ¤æ–­è›‡å¤´å‰æ–¹æ˜¯ä»€ä¹ˆ
-bool Reaction(char kbin);           //æ‰§è¡Œé”®ç›˜è¾“å…¥çš„æŒ‡ä»¤,åŒæ—¶è¿”å›ä¸€ä¸ªboolå€¼è¡¨ç¤ºè¯¥æŒ‡ä»¤æ˜¯å¦å¯æ‰§è¡Œ
-int XYJudge(int x, int y);          //åˆ¤æ–­xyæ ¼å†…æœ‰ä»€ä¹ˆ
+void gotoxy(int x, int y);          //ÒÆ¶¯¹â±ê
+void setmap(int width, int height); //´´½¨µØÍ¼
+void printBlock(int x, int y);      //´òÓ¡·½¿é
+void printFood(int x, int y);       //´òÓ¡Ê³Îï
+void printSpace(int x, int y);      //´òÓ¡¿Õ¸ñ
+void creatFood();                   //Ëæ»úÉú³ÉÊ³Îï
+void welcome();                     //»¶Ó­½çÃæ(Î´Íê³É)
+void GameInit();                    //ÓÎÏ·³õÊ¼»¯
+void MainLoop();                    //Ö÷ÌåÑ­»·
+void HeadJudge();                   //ÅĞ¶ÏÉßÍ·Ç°·½ÊÇÊ²Ã´
+bool Reaction(char kbin);           //Ö´ĞĞ¼üÅÌÊäÈëµÄÖ¸Áî,Í¬Ê±·µ»ØÒ»¸öboolÖµ±íÊ¾¸ÃÖ¸ÁîÊÇ·ñ¿ÉÖ´ĞĞ
+int XYJudge(int x, int y);          //ÅĞ¶Ïxy¸ñÄÚÓĞÊ²Ã´
 void Moving();
 void DeleteEnd();
 void Eating();
-void GameOver();                    //æ¸¸æˆç»“æŸ(æœªå®Œæˆ)
+void GameOver();                    //ÓÎÏ·½áÊø(Î´Íê³É)
 
 int snakemain();
 }
