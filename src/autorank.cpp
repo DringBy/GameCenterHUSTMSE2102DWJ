@@ -1,4 +1,5 @@
 #include "autorank.h"
+#include <iostream>
 
 //初始化静态成员
 const int c_iTsSize = 256;
@@ -37,15 +38,21 @@ m_ulScore(0)
 const char* scoreblock::GetStrInf() const
 {
     //将时间转换为格式化的字符串
+    char lpTimeStr[20];
+
+    #ifdef SAFELIBFUN
     tm tmTimeStruct;
     localtime_s(&tmTimeStruct, &m_ttPlayTime);
-
-    char lpTimeStr[20];
     strftime(lpTimeStr, 20, "%Y-%m-%d %H:%M:%S", &tmTimeStruct);
 
     //格式化输出
     sprintf_s(s_lpTmpStr, c_iTsSize, "%-12u%s     %s\n", m_ulScore, lpTimeStr, m_strName.c_str());
+    #else
+    tm *tmTimeStruct = localtime(&m_ttPlayTime);
+    strftime(lpTimeStr, 20, "%Y-%m-%d %H:%M:%S", tmTimeStruct);
 
+    sprintf(s_lpTmpStr, "%-12u%s     %s\n", m_ulScore, lpTimeStr, m_strName.c_str());
+    #endif
     return s_lpTmpStr;
 }
 
@@ -125,12 +132,22 @@ bool scoredealer::ReadFile(const char* path)
 {
     bool is_suc = true;
     char ptr[sizeof(time_t)];
+    size_t size = 0;
     s_fFile.open(path, std::ios::in | std::ios::binary);
 
     s_fFile.read(ptr, sizeof(size_t));
-    size_t size = *(size_t*)ptr;
 
-    s_vScoreList.resize(size);
+    //防止新建文件导致的错误
+    if(!s_fFile.good())
+    {
+        s_vScoreList.resize(0);
+    }
+    else
+    {
+        size = *(size_t*)ptr;
+        s_vScoreList.resize(size);
+    }
+
 
     if(s_fFile.good())
     {
@@ -182,4 +199,23 @@ void scoredealer::PrintList(int layer)
 void scoredealer::Insert(const scoreblock& obj)
 {
     s_vScoreList.push_back(obj);
+}
+
+void scoredealer::FastIOScore(unsigned long score, const char* path)
+{
+    char c;
+    char str[256];
+
+    printf("请问是否记录分数?\n输入y确定\n");
+    std::cin >> c;
+
+    if(c != 'y')return;
+    printf("请输入您的名字:\n");
+    std::cin >> str;
+
+    ReadFile(path);
+
+    Insert(scoreblock{str, time(NULL), score});
+
+    WriteFile(path);
 }

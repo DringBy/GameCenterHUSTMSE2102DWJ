@@ -63,6 +63,9 @@ public:
     //插入分数块
     static void Insert(const scoreblock& obj);
 
+    //快速输入并输出文件，计入分数
+    static void FastIOScore(unsigned long score, const char* path);
+
 private:
 
     //隐藏构造函数
