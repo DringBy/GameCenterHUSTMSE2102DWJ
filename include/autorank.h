@@ -1,4 +1,4 @@
-#pragma onec
+#pragma once
 
 #include<string>
 #include<ctime>

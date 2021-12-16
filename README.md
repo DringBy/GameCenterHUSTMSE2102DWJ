@@ -2,11 +2,13 @@
 
 ##### A C++ Programming Project of HUST MSE 2102 class.
 
-**Members:** Ding Degui
+**Members:** 
 
-​					WANG Dingzhi
+Ding Degui
 
-​					JI Xiangtian
+WANG Dingzhi
+
+JI Xiangtian
 
 ---
 

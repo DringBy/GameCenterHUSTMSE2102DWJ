@@ -9,7 +9,7 @@ const int MapWidth = 68;
 const int MapHeight = 26;
 const char Block[] = "■";
 const char FoodGraph[] = "⊙";
-int SPEED = 40, Direction = 4; //蛇的朝向,1234分别对应上左下右
+int SPEED = 80, Direction = 4; //蛇的朝向,1234分别对应上左下右
 
 int snake::snakemain()
 {
