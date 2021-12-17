@@ -1,6 +1,7 @@
 #pragma once
 #include<vector>
-#include"timer.h"
+#include <sstream>
+#include"control.h"
 
 //地雷地图上的地雷
 const int om_MINE =	-1;
@@ -17,6 +18,8 @@ const int sm_FLAG = 2;
 const int sm_SHOWN = 1;
 //未知标识
 const int sm_UNKNOWN = 0;
+
+const char clpNumTable[][5] = {"○ ", "① ", "② ", "③ ", "④ ", "⑤ ", "⑥ ", "⑦ ", "⑧ "};
 
 //承担扫雷游戏的类
 class MineMap
@@ -42,11 +45,14 @@ public:
 
 private:
 
-	//找一个非地雷的位置
-	void FindNoneMine(int& x, int& y);
+	//特殊化显示字符
+	void SpecializeCurso();
 
 	//计算周围的地雷数目
 	void CountMine();
+
+	//获取一个空最多的位置
+	void FindStartP(int& x, int& y);
 
 	//触摸坐标
 	bool Touch(int x,int y);
@@ -56,6 +62,8 @@ private:
 	bool PutFlag(int x, int y);
 	//重置标志
 	bool PutReset(int x, int y);
+	//自动探索
+	bool PutConfirm(int x, int y);
 
 	//计算得分
 	void CountScore();
@@ -87,6 +95,14 @@ private:
 	int iMineNum;
 	//地图大小
 	int iBlankSize;
+
+	//光标x轴
+	int iCursoX;
+	//光标y轴
+	int iCursoY;
+
+	//输入缓冲区
+	std::stringstream ssTmpInput;
 };
 
 //是否可计分

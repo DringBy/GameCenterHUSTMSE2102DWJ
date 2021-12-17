@@ -1,30 +1,34 @@
-#include"mine.h"
-#include"autorank.h"
-#include<cstdlib>
+#include "mine.h"
+#include "autorank.h"
+#include <cstdlib>
 #include <cstdio>
-#include<iostream>
-#include<cmath>
-#include<conio.h>
+#include <iostream>
+#include <cmath>
+#include <conio.h>
+#include <string>
 
 //将一个格子周围的格子坐标计算方式储存在数组中，方便代码书写
 int lpCheckRange[2][8] = {
-	{1,0,0,-1, 1,1,-1,-1},
-	{0,1,-1,0, 1,-1,1,-1}
-};
+	{1, 0, 0, -1, 1, 1, -1, -1},
+	{0, 1, -1, 0, 1, -1, 1, -1}};
 
-MineMap::MineMap(int wide, int heigh, int mine_num) :
-	iWide(std::max(wide, 1)),
-	iHeigh(std::max(heigh, 1)),
-	vOriginalMap(std::max(wide, 1) + 2),
-	vStateMap(std::max(wide, 1) + 2),
-	blIsDead(false),
-	bIsFirst(true),
-	iPutFlag(0),
-	iShowPlace(0),
-	iScore(0),
-	iMineNum(std::min(iHeigh * iWide - 1, mine_num)),
-	iBlankSize(iWide * iHeigh)
+MineMap::MineMap(int wide, int heigh, int mine_num) : iWide(std::max(wide, 1)),
+													  iHeigh(std::max(heigh, 1)),
+													  vOriginalMap(std::max(wide, 1) + 2),
+													  vStateMap(std::max(wide, 1) + 2),
+													  blIsDead(false),
+													  bIsFirst(false),
+													  iPutFlag(0),
+													  iShowPlace(0),
+													  iScore(0),
+													  iMineNum(std::min(iHeigh * iWide - 1, mine_num)),
+													  iBlankSize(iWide * iHeigh),
+													  iCursoX(5),
+													  iCursoY(5)
 {
+	//设置位右对齐
+	ssTmpInput.setf(std::ios_base::left, std::ios_base::adjustfield);
+
 	iBlankSize -= iMineNum;
 
 	srand((unsigned int)time(NULL));
@@ -65,7 +69,7 @@ MineMap::MineMap(int wide, int heigh, int mine_num) :
 	{
 		vOriginalMap[i / iHeigh + 1][i % iHeigh + 1] = om_MINE;
 	}
-	
+
 	//将地图中的格子打乱，实现随机地雷位置的效果
 	int iTmpSwap;
 	int iRandX, iRandY;
@@ -80,6 +84,12 @@ MineMap::MineMap(int wide, int heigh, int mine_num) :
 			vOriginalMap[iRandX][iRandY] = iTmpSwap;
 		}
 	}
+
+	CountMine();
+
+	FindStartP(iCursoX, iCursoY);
+	Touch(iCursoX, iCursoY);
+	bIsFirst = true;
 }
 
 void MineMap::CountMine()
@@ -88,10 +98,29 @@ void MineMap::CountMine()
 	{
 		for (int j = 1; j <= iHeigh; j++)
 		{
-			if (vOriginalMap[i][j] == om_MINE)continue;
+			if (vOriginalMap[i][j] == om_MINE)
+				continue;
 			for (int k = 0; k < 8; k++)
 			{
-				if (vOriginalMap[i + lpCheckRange[0][k]][j + lpCheckRange[1][k]] == om_MINE) vOriginalMap[i][j]++;
+				if (vOriginalMap[i + lpCheckRange[0][k]][j + lpCheckRange[1][k]] == om_MINE)
+					vOriginalMap[i][j]++;
+			}
+		}
+	}
+}
+
+void MineMap::FindStartP(int& x, int& y)
+{
+	int iMinSur = 9;
+	for (int i = 1; i <= iWide; i++)
+	{
+		for (int j = 1; j <= iHeigh; j++)
+		{
+			if(vOriginalMap[i][j] >= 0 && vOriginalMap[i][j] < iMinSur)
+			{
+				iMinSur = vOriginalMap[i][j];
+				x = i;
+				y = j;
 			}
 		}
 	}
@@ -104,70 +133,68 @@ void MineMap::Print_Original()
 	{
 		for (int j = 0; j < iHeigh + 2; j++)
 		{
-			if(vOriginalMap[i][j] >= 0)printf("%-3d", vOriginalMap[i][j]);
-			else if (vOriginalMap[i][j] == om_MINE)printf("*  ");
-			else if (vOriginalMap[i][j] == om_BLANK)printf("$  ");
+			if (vOriginalMap[i][j] >= 0)
+			{
+				ssTmpInput.width(3);
+				ssTmpInput << vOriginalMap[i][j];
+			}
+			else if (vOriginalMap[i][j] == om_MINE)
+				ssTmpInput << "*  ";
+			else if (vOriginalMap[i][j] == om_BLANK)
+				ssTmpInput << "$  ";
 		}
-		printf("\n");
+		ssTmpInput << '\n';
 	}
-
 }
 
 void MineMap::Print_State()
 {
-	printf("   ");
+	ssTmpInput << "   ";
 
 	for (int i = 0; i < iHeigh + 2; i++)
 	{
-		printf("%-3d", i);
+		ssTmpInput.width(3);
+		ssTmpInput << i;
 	}
-	printf("\n");
+	ssTmpInput << '\n';
 
 	for (int i = 0; i < iWide + 2; i++)
 	{
-		printf("%-3d", i);
+		ssTmpInput.width(3);
+		ssTmpInput << i;
 		for (int j = 0; j < iHeigh + 2; j++)
 		{
-			if (vStateMap[i][j] == sm_SHOWN)
+			if (i == iCursoX && j == iCursoY)
 			{
-				printf("%-3d", vOriginalMap[i][j]);
+				SpecializeCurso();
 			}
-			else if (vStateMap[i][j] == sm_UNKNOWN)printf("@  ");
-			else if (vStateMap[i][j] == sm_QUEST)printf("?  ");
-			else if (vStateMap[i][j] == sm_FLAG)printf("#  ");
-			else if (vStateMap[i][j] == sm_BLANK)printf("$  ");
-		}
-
-		if(i == 1)
-		{
-			printf("\t■\t%dx%d扫雷游戏\n", iWide, iHeigh);
-		}
-		else if(i == 2)
-		{
-			printf("\t■\t扫雷进度:%d/%d\n", iPutFlag, iMineNum);
-		}
-		else if(i == 3)
-		{
-			printf("\t■\t探索进度:%d/%d\n", iShowPlace, iBlankSize);
-		}
-		else printf("\t■\t\n");
-	}
-
-}
-
-void MineMap::FindNoneMine(int& x, int& y)
-{
-	for (int i = 1; i < iWide + 1; i++)
-	{
-		for (int j = 1; j < iHeigh + 1; j++)
-		{
-			if(vOriginalMap[i][j] != om_MINE)
+			else if (vStateMap[i][j] == sm_SHOWN)
 			{
-				x = i;
-				y = j;
-				return;
+				ssTmpInput << vOriginalMap[i][j] << "  ";
 			}
+			else if (vStateMap[i][j] == sm_UNKNOWN)
+				ssTmpInput << "□ ";
+			else if (vStateMap[i][j] == sm_QUEST)
+				ssTmpInput << "◇ ";
+			else if (vStateMap[i][j] == sm_FLAG)
+				ssTmpInput << "△ ";
+			else if (vStateMap[i][j] == sm_BLANK)
+				ssTmpInput << "╳  ";
 		}
+
+		if (i == 1)
+		{
+			ssTmpInput << "\t■\t" << iWide << 'x' << iHeigh << "扫雷游戏\n";
+		}
+		else if (i == 2)
+		{
+			ssTmpInput << "\t■\t扫雷进度:" << iPutFlag << '/' << iMineNum << '\n';
+		}
+		else if (i == 3)
+		{
+			ssTmpInput << "\t■\t探索进度:" << iShowPlace << '/' << iBlankSize << '\n';
+		}
+		else ssTmpInput << "\t■\t\n";
 	}
 }
 
@@ -179,36 +206,10 @@ bool MineMap::Touch(int x, int y)
 		return false;
 	}
 
-	//防止第一格就是地雷
-	if(bIsFirst)
+	if (bIsFirst)
 	{
 		bIsFirst = false;
-
-		vStateMap[x][y] = sm_SHOWN;
-		iShowPlace++;
-
-		if (vOriginalMap[x][y] == om_MINE)
-		{
-			int fx,fy;
-			FindNoneMine(fx, fy);
-			vOriginalMap[fx][fy] = om_MINE;
-			vOriginalMap[x][y] = 0;
-		}
-
-		CountMine();
-
-		//自动点击周围没有地雷的格子
-		if(vOriginalMap[x][y] == 0)
-		{
-			for (int i = 0; i < 8; i++)
-			{
-				Touch(x + lpCheckRange[0][i], y + lpCheckRange[1][i]);
-			}
-		}
-
 		tmGameTime.Start();
-
-		return true;
 	}
 
 	if (vStateMap[x][y] == sm_UNKNOWN)
@@ -223,7 +224,7 @@ bool MineMap::Touch(int x, int y)
 		}
 
 		//自动点击周围没有地雷的格子
-		if(vOriginalMap[x][y] == 0)
+		if (vOriginalMap[x][y] == 0)
 		{
 			for (int i = 0; i < 8; i++)
 			{
@@ -243,11 +244,17 @@ bool MineMap::PutQuest(int x, int y)
 {
 	if (x > 0 && x <= iWide && y > 0 && y <= iHeigh && (vStateMap[x][y] == sm_UNKNOWN || vStateMap[x][y] == sm_FLAG))
 	{
+		if (vStateMap[x][y] == sm_FLAG)
+		{
+			iPutFlag--;
+		}
+
 		vStateMap[x][y] = sm_QUEST;
 
 		return true;
 	}
-	else return false;
+	else
+		return false;
 }
 
 bool MineMap::PutFlag(int x, int y)
@@ -259,14 +266,15 @@ bool MineMap::PutFlag(int x, int y)
 
 		return true;
 	}
-	else return false;
+	else
+		return false;
 }
 
 bool MineMap::PutReset(int x, int y)
 {
 	if (x > 0 && x <= iWide && y > 0 && y <= iHeigh && (vStateMap[x][y] == sm_FLAG || vStateMap[x][y] == sm_QUEST))
 	{
-		if(vStateMap[x][y] == sm_FLAG)
+		if (vStateMap[x][y] == sm_FLAG)
 		{
 			iPutFlag--;
 		}
@@ -275,7 +283,35 @@ bool MineMap::PutReset(int x, int y)
 
 		return true;
 	}
-	else return false;
+	else
+		return false;
+}
+
+bool MineMap::PutConfirm(int x, int y)
+{
+	if (x > 0 && x <= iWide && y > 0 && y <= iHeigh && (vStateMap[x][y] == sm_SHOWN))
+	{
+		int iFlagCount = 0;
+		for (int k = 0; k < 8; k++)
+		{
+			if (vStateMap[x + lpCheckRange[0][k]][y + lpCheckRange[1][k]] == sm_FLAG)
+			{
+				iFlagCount++;
+			}
+		}
+
+		if(iFlagCount >= vOriginalMap[x][y])
+		{
+			for (int k = 0; k < 8; k++)
+			{
+				Touch(x + lpCheckRange[0][k], y + lpCheckRange[1][k]);
+			}
+		}
+
+		return true;
+	}
+	else
+		return false;
 }
 
 bool MineMap::IsDead()
@@ -290,82 +326,156 @@ bool MineMap::IsWin()
 
 bool MineMap::Play()
 {
-	bool is = true;
-	bool ps = true;
-	char c = 0;
+	keycheck kcQuit('E');
+	keycheck kcTouch('T');
+	keycheck kcReset('R');
+	keycheck kcQuest('Q');
+	keycheck kcFlag('F');
+	keycheck kcConfirm('C');
+	keycheck kcUp(VK_UP);
+	keycheck kcLeft(VK_LEFT);
+	keycheck kcRight(VK_RIGHT);
+	keycheck kcDown(VK_DOWN);
+
 	int x = 0, y;
+	bool bIsUpdate = true;;
 
-	while (c != 'e' && !IsDead() && !IsWin())
+	while (kcQuit.getstat() == 0 && !IsDead() && !IsWin())
 	{
-		if (!ps)
+		Sleep(50);
+
+		if(bIsUpdate)
 		{
-			printf("无效的坐标\n");
+			//绘图部分
+			system("cls");
+			ssTmpInput << "e 退出\tt 触动\tr 恢复\tq 可疑\tf 标记\tc 自动试探\n";
+			ssTmpInput << "■ 空地\t◆ 疑问\t▲ 标记\n";
+			ssTmpInput << "上下左右移动光标\n";
+			Print_State();
+			std::cout << ssTmpInput.str();
+
+			ssTmpInput.str("");
+			ssTmpInput.clear();
+
+			bIsUpdate = false;
 		}
-		else if (!is)
+		
+		//逻辑部分
+		if (kcLeft.getstat() == 1 || kcLeft.getstat() == 3)
 		{
-			printf("无效的命令:%c\n", c);
-			is = true;
+			iCursoY = (iHeigh + iCursoY - 2) % iHeigh + 1;
+			bIsUpdate = true;
 		}
-
-		printf("e 退出\tt 触动\tr 恢复\tq 可疑\tf 标记\n");
-		Print_State();
-
-		std::cin >> c;
-
-		if (c != 'e')
+		else if (kcRight.getstat() == 1 || kcRight.getstat() == 3)
 		{
-			scanf("%d %d", &y, &x);
-			if (c == 't')
-			{			
-				ps = Touch(x, y);
-			}
-			else if (c == 'r')
-			{
-				ps = PutReset(x, y);
-			}
-			else if (c == 'q')
-			{
-				ps = PutQuest(x, y);
-			}
-			else if (c == 'f')
-			{
-				ps = PutFlag(x, y);
-			}
-			else is = false;
+			iCursoY = (iCursoY) % iHeigh + 1;
+			bIsUpdate = true;
 		}
-
-		system("cls");
+		else if (kcUp.getstat() == 1 || kcUp.getstat() == 3)
+		{
+			iCursoX = (iWide + iCursoX - 2) % iWide + 1;
+			bIsUpdate = true;
+		}
+		else if (kcDown.getstat() == 1 || kcDown.getstat() == 3)
+		{
+			iCursoX = (iCursoX) % iWide + 1;
+			bIsUpdate = true;
+		}
+		else if (kcTouch.getstat() == 1)
+		{
+			Touch(iCursoX, iCursoY);
+			bIsUpdate = true;
+		}
+		else if (kcReset.getstat() == 1)
+		{
+			PutReset(iCursoX, iCursoY);
+			bIsUpdate = true;
+		}
+		else if (kcQuest.getstat() == 1)
+		{
+			PutQuest(iCursoX, iCursoY);
+			bIsUpdate = true;
+		}
+		else if (kcFlag.getstat() == 1)
+		{
+			PutFlag(iCursoX, iCursoY);
+			bIsUpdate = true;
+		}
+		else if (kcConfirm.getstat() == 1)
+		{
+			PutConfirm(iCursoX, iCursoY);
+			bIsUpdate = true;
+		}
 	}
 	tmGameTime.Stop();
+	scanf("%*[^\n]%*c");//清除输入缓冲区
 
+	ssTmpInput.str("");
+	ssTmpInput.clear();
+	system("cls");
 	Print_State();
 	printf("\n");
 	Print_Original();
+	std::cout << ssTmpInput.str();
+	ssTmpInput.str("");
+	ssTmpInput.clear();
 
 	clock_t ctGameTime = -tmGameTime.Read();
 	printf("游戏共用时间%d.%ds\n", ctGameTime / 1000, ctGameTime % 1000);
 
-	if (c == 'e')
-	{
-		printf("退出游戏\n");
-		return false;
-	}
-	else if(IsDead())
+	if (IsDead())
 	{
 		printf("游戏失败\n");
 		return false;
 	}
-	else
+	else if (IsWin())
 	{
-		printf("游戏胜利\n");
-		if(IsCountable(iWide, iHeigh, iMineNum))
+		if (IsCountable(iWide, iHeigh, iMineNum))
 		{
 			CountScore();
 			printf("游戏得分:%u\n", iScore);
 
 			scoredealer::FastIOScore(iScore, "mine.dat");
 		}
+		printf("游戏胜利\n");
 		return true;
+	}
+	else
+	{
+		printf("退出游戏\n");
+		return false;
+	}
+}
+
+void MineMap::SpecializeCurso()
+{
+	switch (vStateMap[iCursoX][iCursoY])
+	{
+	case sm_SHOWN:
+	{
+		if(vOriginalMap[iCursoX][iCursoY] == om_MINE)
+		{
+			ssTmpInput << "*  ";
+			break;
+		}
+		ssTmpInput << clpNumTable[vOriginalMap[iCursoX][iCursoY]];
+		break;
+	}
+	case sm_UNKNOWN:
+	{
+		ssTmpInput << "■ ";
+		break;
+	}
+	case sm_QUEST:
+	{
+		ssTmpInput << "◆ ";
+		break;
+	}
+	case sm_FLAG:
+	{
+		ssTmpInput << "▲ ";
+		break;
+	}
 	}
 }
 
@@ -383,7 +493,7 @@ bool IsCountable(int w, int h, int num)
 
 void MineMap::CountScore()
 {
-	clock_t cCurTime = - tmGameTime.Read();
+	clock_t cCurTime = -tmGameTime.Read();
 	double ulSizeBase = 45 * 45 + 1 - std::min(45.0 * 45.0, iWide * iHeigh * 1.0);
 	ulSizeBase = pow(1.006, ulSizeBase * (1 + fabs(log10(iMineNum * 1.0) / iBlankSize)));
 	unsigned long ulFullScore = 4000000000ul / (unsigned long)ulSizeBase;
