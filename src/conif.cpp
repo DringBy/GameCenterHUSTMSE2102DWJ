@@ -204,9 +204,9 @@ void clean()
 {
 	int k;
 	while (1) {
-		if (_kbhit()) {
-			k = _getch();
-			if (0 == k || 0xE0 == k) k = _getch();
+		if (kbhit()) {
+			k = getch();
+			if (0 == k || 0xE0 == k) k = getch();
 		}
 		else break;
 	}
