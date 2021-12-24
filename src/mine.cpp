@@ -1,5 +1,6 @@
 #include "mine.h"
 #include "autorank.h"
+#include "conif.h"
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
@@ -109,14 +110,14 @@ void MineMap::CountMine()
 	}
 }
 
-void MineMap::FindStartP(int& x, int& y)
+void MineMap::FindStartP(int &x, int &y)
 {
 	int iMinSur = 9;
 	for (int i = 1; i <= iWide; i++)
 	{
 		for (int j = 1; j <= iHeigh; j++)
 		{
-			if(vOriginalMap[i][j] >= 0 && vOriginalMap[i][j] < iMinSur)
+			if (vOriginalMap[i][j] >= 0 && vOriginalMap[i][j] < iMinSur)
 			{
 				iMinSur = vOriginalMap[i][j];
 				x = i;
@@ -194,7 +195,8 @@ void MineMap::Print_State()
 		{
 			ssTmpInput << "\t■\t探索进度:" << iShowPlace << '/' << iBlankSize << '\n';
 		}
-		else ssTmpInput << "\t■\t\n";
+		else
+			ssTmpInput << "\t■\t\n";
 	}
 }
 
@@ -300,7 +302,7 @@ bool MineMap::PutConfirm(int x, int y)
 			}
 		}
 
-		if(iFlagCount >= vOriginalMap[x][y])
+		if (iFlagCount >= vOriginalMap[x][y])
 		{
 			for (int k = 0; k < 8; k++)
 			{
@@ -338,13 +340,12 @@ bool MineMap::Play()
 	keycheck kcDown(VK_DOWN);
 
 	int x = 0, y;
-	bool bIsUpdate = true;;
+	bool bIsUpdate = true;
+	;
 
 	while (kcQuit.getstat() == 0 && !IsDead() && !IsWin())
 	{
-		Sleep(50);
-
-		if(bIsUpdate)
+		if (bIsUpdate)
 		{
 			//绘图部分
 			system("cls");
@@ -360,6 +361,8 @@ bool MineMap::Play()
 			bIsUpdate = false;
 		}
 		
+		Sleep(50);
+
 		//逻辑部分
 		if (kcLeft.getstat() == 1 || kcLeft.getstat() == 3)
 		{
@@ -408,7 +411,10 @@ bool MineMap::Play()
 		}
 	}
 	tmGameTime.Stop();
-	scanf("%*[^\n]%*c");//清除输入缓冲区
+
+	//游戏结束处理部分
+
+	clean(); //清除输入缓冲区
 
 	ssTmpInput.str("");
 	ssTmpInput.clear();
@@ -453,7 +459,7 @@ void MineMap::SpecializeCurso()
 	{
 	case sm_SHOWN:
 	{
-		if(vOriginalMap[iCursoX][iCursoY] == om_MINE)
+		if (vOriginalMap[iCursoX][iCursoY] == om_MINE)
 		{
 			ssTmpInput << "*  ";
 			break;
@@ -502,19 +508,19 @@ void MineMap::CountScore()
 	iScore = ulFullScore * TimeRate;
 }
 
-void GetArgs(int&x, int&y, int&num)
+void GetArgs(int &x, int &y, int &num)
 {
 	char c = 0;
 
-	while(true)
+	while (true)
 	{
 		system("cls");
 		printf("请输入地图的宽度 高度 地雷数目\n");
 		scanf("%d %d %d", &x, &y, &num);
 
-		if(x > 0 && y > 0 && num > 0)
+		if (x > 0 && y > 0 && num > 0)
 		{
-			if(IsCountable(x, y, num))
+			if (IsCountable(x, y, num))
 			{
 				break;
 			}
@@ -524,70 +530,74 @@ void GetArgs(int&x, int&y, int&num)
 				printf("输入y确定并继续游玩，输入其他将继续选择\n");
 				std::cin >> c;
 
-				if(c == 'y')break;
+				if (c == 'y')
+					break;
 			}
 		}
 
-		scanf("%*[^\n]%*c");//清除输入缓冲区
+		clean(); //清除输入缓冲区
 	}
 	system("cls");
 }
 
 void PlayMine()
 {
-		bool bIsChoosed = true;
+	bool bIsChoosed = true;
 	int x = 0, y = 0, num = 0;
 	char c = 0;
+
+	char lpDiffName[][MAXOPTLEN] = {"EASY", "NORMAL", "HARD", "LUNARTIC", "EX-STAGE", "EXIT"};
+	char lpTitle[] = "MINE SWEEPER";
+	conif cfDiffChose(6, lpDiffName, lpTitle, 48);
 
 	while (true)
 	{
 		bIsChoosed = true;
 		x = 0, y = 0, num = 0;
-		c = 0;
 
-		while (bIsChoosed)
+		c = cfDiffChose.Display();
+
+		switch (c)
 		{
-			printf("请选择游戏模式:\nq\t简单(9x9+10)\nw\t普通(16x16+40)\ne\t困难(16x30+99)\nr\t自定义\nt\t退出\n");
-			bIsChoosed = false;
-			std::cin >> c;
-			switch (c)
-			{
-			case 'q':
-			{
-				x = 9;
-				y = 9;
-				num = 10;
-				break;
-			}
-			case 'w':
-			{
-				x = 16;
-				y = 16;
-				num = 40;
-				break;
-			}
-			case 'e':
-			{
-				x = 16;
-				y = 30;
-				num = 99;
-				break;
-			}
-			case 'r':
-			{
-				GetArgs(x, y, num);
-				break;
-			}
-			case 't':
-			{
-				return;
-			}
-			default:
-			{
-				bIsChoosed = true;
-			}
-			}
+		case 0:
+		{
+			x = 9;
+			y = 9;
+			num = 10;
+			break;
 		}
+		case 1:
+		{
+			x = 16;
+			y = 16;
+			num = 40;
+			break;
+		}
+		case 2:
+		{
+			x = 16;
+			y = 30;
+			num = 99;
+			break;
+		}
+		case 3:
+		{
+			x = 30;
+			y = 45;
+			num = 350;
+			break;
+		}
+		case 4:
+		{
+			GetArgs(x, y, num);
+			break;
+		}
+		case 5:
+		{
+			return;
+		}
+		}
+
 		system("cls");
 
 		MineMap mm{x, y, num};
@@ -597,7 +607,8 @@ void PlayMine()
 
 		std::cin >> c;
 
-		if(c != 'r')break;
+		if (c != 'r')
+			break;
 		system("cls");
 	}
 }

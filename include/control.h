@@ -40,6 +40,7 @@ private:
 
 };
 
+//独立按键监听
 struct keycheck
 {
 	DWORD vKey;
