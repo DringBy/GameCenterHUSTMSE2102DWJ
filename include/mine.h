@@ -69,9 +69,9 @@ private:
 	void CountScore();
 
 	//原始地图，记录 地雷即空地周围的地雷数
-	std::vector<std::vector<int>> vOriginalMap;
+	std::vector<std::vector<int> > vOriginalMap;
 	//状态地图，呈现给玩家地图
-	std::vector<std::vector<char>> vStateMap;
+	std::vector<std::vector<char> > vStateMap;
 
 	//地图宽度
 	int iWide;

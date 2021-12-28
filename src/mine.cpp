@@ -600,7 +600,7 @@ void PlayMine()
 
 		system("cls");
 
-		MineMap mm{x, y, num};
+		MineMap mm(x, y, num);
 		mm.Play();
 
 		printf("游戏结束，输入r\t再次游玩,输入其他键退出\n");

@@ -56,7 +56,7 @@ private:
 public:
 
     conif(int TotalOpt, char (*OptName)[MAXOPTLEN],
-     char* Title = nullptr, 
+     char* Title = NULL, 
      int ScreenW = 27, 
      char SelectCh = '*', 
      char BoardCh = '#',  

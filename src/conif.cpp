@@ -19,15 +19,15 @@ conif::conif(int TotalOpt,
                               cSelectCh(SelectCh),
                               cBoardCh(BoardCh),
                               iTmpSize((ScreenW + 1) * (TotalOpt * 2 + 6)),
-                              lpTmpStr(nullptr),
-                              lpCenterBlank(nullptr),
-                              lpCenterOffset(nullptr),
+                              lpTmpStr(NULL),
+                              lpCenterBlank(NULL),
+                              lpCenterOffset(NULL),
                               iChoseOffset(ScreenW)
 {
     lpCenterBlank = new int[TotalOpt + 2];
     lpCenterOffset = new bool[TotalOpt + 2];
 
-    if(lpTitle != nullptr)
+    if(lpTitle != NULL)
     {
         lpCenterBlank[0] = (ScreenW - strlen(Title) - 2) / 2;//标题
         lpCenterOffset[0] = (ScreenW - strlen(Title) - 2) % 2;
@@ -109,7 +109,7 @@ void conif::Flush()
 
     FlushWord(-4, lpStrP);
     FlushWord(-3, lpStrP);
-    if(lpTitle == nullptr)FlushWord(-3, lpStrP);
+    if(lpTitle == NULL)FlushWord(-3, lpStrP);
     else FlushWord(-1, lpStrP);
     FlushWord(-3, lpStrP);
     FlushWord(-3, lpStrP);
