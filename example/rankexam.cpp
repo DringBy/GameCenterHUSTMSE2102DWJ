@@ -7,18 +7,17 @@ int rankmain()
     scoredealer::Insert(scoreblock{"n123456", time(NULL) + 200, 100000000ul});
     scoredealer::Insert(scoreblock{"n123456789", time(NULL) + 300, 1000000ul});
     scoredealer::Insert(scoreblock{"中文字符", time(NULL) - 500, 10000ul});
-    scoredealer::Insert(scoreblock{"123先辈abc{_?", time(NULL) + 50, 114514ul});
+    scoredealer::Insert(scoreblock{"123中文abc{_?", time(NULL) + 50, 114514ul});
 
     scoredealer::PrintList(1);
     scoredealer::WriteFile("test.dat");
 
     // //输出数据示例
-    // scoredealer::ReadFile("test.dat");
-    // scoredealer::PrintList(1);
+    scoredealer::ReadFile("test.dat");
+    scoredealer::PrintList(1);
 
     //使用说明
     /*
-    -1.使用C11以上的标准 C98标准未测试
     0.复制autorank.h与autorank.cpp到需要的地方!!!!
     1.include"autorank.h"
     2.使用scoredealer::ReadFile读取相应的分数文件 文件名字随意但要固定 推荐：[小项目名].dat

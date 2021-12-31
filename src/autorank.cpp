@@ -1,7 +1,6 @@
 #include "autorank.h"
 #include <iostream>
 
-//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½Ô±
 const int c_iTsSize = 256;
 char scoreblock::s_lpTmpStr[c_iTsSize] = {};
 
@@ -39,11 +38,9 @@ const char* scoreblock::GetStrInf() const
 {
     char lpTimeStr[20];
 
-    //ï¿½ï¿½Ê±ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
     tm *tmTimeStruct = localtime(&m_ttPlayTime);
     strftime(lpTimeStr, 20, "%Y-%m-%d %H:%M:%S", tmTimeStruct);
 
-    //ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½
     sprintf(s_lpTmpStr, "%-12u%s     %s\n", m_ulScore, lpTimeStr, m_strName.c_str());
     return s_lpTmpStr;
 }
@@ -53,7 +50,6 @@ scoredealer::scoredealer()
 
 void scoredealer::WriteData(const scoreblock& obj)
 {
-    //Ð´ï¿½ï¿½unsigned longï¿½ÍµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Í¬
     char* ptr = (char*)&obj.m_ulScore;
 
     for(int i = 0; i < sizeof(unsigned long); i++)
@@ -86,7 +82,6 @@ bool scoredealer::WriteFile(const char* path)
             s_fFile.put(ptr[i]);
         }
 
-        //c11ï¿½Âµï¿½forï¿½ï¿½ï¿½ï¿½ï¿½ï·¨
         for(std::vector<scoreblock>::iterator i = s_vScoreList.begin(); i < s_vScoreList.end();i++)
         {
             WriteData(*i);
@@ -97,7 +92,6 @@ bool scoredealer::WriteFile(const char* path)
         is_suc = false;
     }
 
-    //ï¿½Ø±ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     s_vScoreList.clear();
     s_fFile.close();
     s_fFile.clear();
@@ -109,7 +103,7 @@ void scoredealer::ReadData(scoreblock& obj)
 {
     char ptr[sizeof(time_t)];
 
-    //ï¿½ï¿½È¡unsigned longï¿½ÍµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Í¬
+    //¶ÁÈ¡unsigned long ÐÍÊý¾Ý
     s_fFile.read(ptr, sizeof(unsigned long));
     obj.m_ulScore = *(unsigned long*)ptr;
 
@@ -129,7 +123,7 @@ bool scoredealer::ReadFile(const char* path)
 
     s_fFile.read(ptr, sizeof(size_t));
 
-    //ï¿½ï¿½Ö¹ï¿½Â½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ÂµÄ´ï¿½ï¿½ï¿½
+    //ÅÐ¶ÏÎÄ¼þ¶ÁÈ¡×´Ì¬
     if(!s_fFile.good())
     {
         s_vScoreList.resize(0);
@@ -153,7 +147,7 @@ bool scoredealer::ReadFile(const char* path)
         is_suc = false;
     }
 
-    //ï¿½Ø±ï¿½ï¿½Ä¼ï¿½
+    //¹Ø±ÕÎÄ¼þ
     s_fFile.close();
     s_fFile.clear();
 
@@ -164,7 +158,7 @@ void scoredealer::PrintList(int layer)
 {
     std::sort(s_vScoreList.rbegin(), s_vScoreList.rend());
     
-    //lpLayerStrï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½Ãµï¿½ï¿½Æ±ï¿½ï¿½ï¿½
+    //lpLayerStrÎ»´æ·ÅËõ½ø·ûµÄ×Ö·û´®
     char* lpLayerStr = new char[layer + 1];
     for(int i = 0; i < layer; i++)
     {
@@ -198,11 +192,11 @@ void scoredealer::FastIOScore(unsigned long score, const char* path)
     char c;
     char str[256];
 
-    printf("ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½?\nï¿½ï¿½ï¿½ï¿½yÈ·ï¿½ï¿½\n");
+    printf("ÇëÎÊÊÇ·ñ¼ÇÂ¼·ÖÊý?\nÊäÈëyÈ·¶¨\n");
     std::cin >> c;
 
     if(c != 'y')return;
-    printf("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:\n");
+    printf("ÇëÊäÈëÄúµÄÃû×Ö:\n");
     std::cin >> str;
 
     ReadFile(path);

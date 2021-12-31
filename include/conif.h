@@ -55,6 +55,16 @@ private:
 
 public:
 
+    //创建一个界面
+    //TotalOpt  总共选项数
+    //OptName   各个选项的名称
+    //Title     标题名称
+    //ScreenW   界面宽度
+    //SelectCh  选中提示符
+    //BoardCh   边框字符
+    //UpVk      上键的虚拟键位码
+    //DownVk    下键的虚拟键位码
+    //EnterVk   选择键的虚拟键位码
     conif(int TotalOpt, char (*OptName)[MAXOPTLEN],
      char* Title = NULL, 
      int ScreenW = 27, 
@@ -64,6 +74,8 @@ public:
      DWORD DownVk = VK_DOWN, 
      DWORD EnterVk = VK_RETURN);
 
+    //显示界面
+    //返回选中的选项
     int Display();   
 
     ~conif();
