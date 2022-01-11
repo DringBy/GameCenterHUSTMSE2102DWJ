@@ -8,21 +8,24 @@
 #include <conio.h>
 #include <string>
 
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
 //将一个格子周围的格子坐标计算方式储存在数组中，方便代码书写
 int lpCheckRange[2][8] = {
 	{1, 0, 0, -1, 1, 1, -1, -1},
 	{0, 1, -1, 0, 1, -1, 1, -1}};
 
-MineMap::MineMap(int wide, int heigh, int mine_num) : iWide(std::max(wide, 1)),
-													  iHeigh(std::max(heigh, 1)),
-													  vOriginalMap(std::max(wide, 1) + 2),
-													  vStateMap(std::max(wide, 1) + 2),
+MineMap::MineMap(int wide, int heigh, int mine_num) : iWide(MAX(wide, 1)),
+													  iHeigh(MAX(heigh, 1)),
+													  vOriginalMap(MAX(wide, 1) + 2),
+													  vStateMap(MAX(wide, 1) + 2),
 													  blIsDead(false),
 													  bIsFirst(false),
 													  iPutFlag(0),
 													  iShowPlace(0),
 													  iScore(0),
-													  iMineNum(std::min(iHeigh * iWide - 1, mine_num)),
+													  iMineNum(MIN(iHeigh * iWide - 1, mine_num)),
 													  iBlankSize(iWide * iHeigh),
 													  iCursoX(5),
 													  iCursoY(5)
@@ -487,7 +490,7 @@ void MineMap::SpecializeCurso()
 
 bool IsCountable(int w, int h, int num)
 {
-	int iMineNum = std::min(w * h - 1, num);
+	int iMineNum = MIN(w * h - 1, num);
 	int iBlankSize = w * h - iMineNum;
 	bool ans = true;
 	ans &= !(w < 8 || h < 8);
@@ -500,11 +503,11 @@ bool IsCountable(int w, int h, int num)
 void MineMap::CountScore()
 {
 	clock_t cCurTime = -tmGameTime.Read();
-	double ulSizeBase = 45 * 45 + 1 - std::min(45.0 * 45.0, iWide * iHeigh * 1.0);
+	double ulSizeBase = 45 * 45 + 1 - MIN(45.0 * 45.0, iWide * iHeigh * 1.0);
 	ulSizeBase = pow(1.006, ulSizeBase * (1 + fabs(log10(iMineNum * 1.0) / iBlankSize)));
 	unsigned long ulFullScore = 4000000000ul / (unsigned long)ulSizeBase;
 
-	double TimeRate = std::min((3000.0 / cCurTime), 1.0);
+	double TimeRate = MIN((3000.0 / cCurTime), 1.0);
 	iScore = ulFullScore * TimeRate;
 }
 
