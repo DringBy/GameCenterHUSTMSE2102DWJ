@@ -1,21 +1,35 @@
 #include "Snake.h"
+#include "conif.h"
+#include "autorank.h"
 
 using namespace std;
 
-snake::SnakeBody * SnakeHead, *Node, *SnakeEnd;
+snake::SnakeBody *SnakeHead, *Node, *SnakeEnd;
 snake::FoodInfo Food;
 
 const int MapWidth = 68;
 const int MapHeight = 26;
 const char Block[] = "■";
 const char FoodGraph[] = "⊙";
-int SPEED = 80, Direction = 4; //蛇的朝向,1234分别对应上左下右
+int SPEED = 80, sprank = 5, SScore = 0;
+int Direction; //蛇的朝向,1234分别对应上左下右
+bool StartFlag, FirstTime;
+bool LoopFlag, RestartFlag;
 
 int snake::snakemain()
 {
+    StartFlag = true;
+    FirstTime = true;
+    LoopFlag=true;
+    RestartFlag=true;
+    StartP:
     welcome();
-    GameInit();
-    MainLoop();
+    while (StartFlag)
+    {
+        GameInit();
+        MainLoop();
+        if(!RestartFlag)goto StartP;
+    }
     return 0;
 }
 
@@ -81,7 +95,162 @@ void snake::creatFood()
 
 void snake::welcome()
 {
-    system("pause");
+    if (FirstTime)
+    {
+        int OpeningXY[][2] = {
+            {18, 5}, {16, 5}, {14, 5}, {12, 5}, {10, 5}, {10, 6}, {10, 7}, {12, 7}, {14, 7}, {16, 7}, {18, 7}, {18, 8}, {18, 9}, {16, 9}, {14, 9}, {12, 9}, {10, 9}, // S
+            {22, 5},
+            {22, 6},
+            {22, 7},
+            {22, 8},
+            {22, 9},
+            {24, 6},
+            {26, 7},
+            {28, 8},
+            {30, 9},
+            {30, 8},
+            {30, 7},
+            {30, 6},
+            {30, 5}, // N
+            {38, 5},
+            {36, 6},
+            {34, 7},
+            {34, 8},
+            {34, 9},
+            {40, 6},
+            {42, 7},
+            {42, 8},
+            {42, 9},
+            {36, 8},
+            {38, 8},
+            {40, 8}, // A
+            {46, 5},
+            {46, 6},
+            {46, 7},
+            {46, 8},
+            {46, 9},
+            {52, 5},
+            {50, 6},
+            {48, 7},
+            {50, 7},
+            {52, 8},
+            {52, 9}, // K
+            {58, 5},
+            {58, 6},
+            {58, 7},
+            {58, 8},
+            {58, 9},
+            {60, 5},
+            {62, 5},
+            {64, 5},
+            {66, 5},
+            {60, 7},
+            {62, 7},
+            {64, 7},
+            {66, 7},
+            {60, 9},
+            {62, 9},
+            {64, 9},
+            {66, 9}, // E
+            {0, 0}};
+        system("cls");
+        int i = 0;
+        while (OpeningXY[i][1] != 0)
+        {
+            printBlock(OpeningXY[i][0], OpeningXY[i][1]);
+            Sleep(20);
+            i++;
+        }
+        gotoxy(18, 12);
+        cout << "Press any button to continue...";
+        HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_CURSOR_INFO cursor;
+        cursor.bVisible = TRUE;
+        cursor.dwSize = sizeof(cursor);
+        SetConsoleCursorInfo(hOutput, &cursor);
+        clean();
+        while (!getch())
+        {
+        }
+        system("cls");
+        cursor.bVisible = FALSE;
+        cursor.dwSize = sizeof(cursor);
+        SetConsoleCursorInfo(hOutput, &cursor);
+        FirstTime=false;
+    }
+MenuLabel:
+    char OptNameS[][MAXOPTLEN] = {"Start Game", "Set Speed", "Quit"};
+    char STitle[] = {"S N A K E"};
+    conif GameMenu(3, OptNameS, STitle, 64);
+    switch (GameMenu.Display())
+    {
+    case 0:
+        gotoxy(10, 8);
+        cout << "请使用英文输入法，用wsad键控制上下左右！";
+        Sleep(2000);
+        clean();
+        return;
+    case 1:
+        setspeed();
+        goto MenuLabel;
+    case 2:
+        StartFlag = false;
+        break;
+    }
+    return;
+}
+
+void snake::setspeed()
+{
+SpeedLabel:
+    gotoxy(10, 8);
+    cout << "Please set the speed(1 slowest ~ 8 fastest):";
+    HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO cursor;
+    cursor.bVisible = TRUE;
+    cursor.dwSize = sizeof(cursor);
+    SetConsoleCursorInfo(hOutput, &cursor);
+    cin >> sprank;
+    cursor.bVisible = FALSE;
+    cursor.dwSize = sizeof(cursor);
+    switch (sprank)
+    {
+    case 1:
+        SPEED = 200;
+        break;
+    case 2:
+        SPEED = 160;
+        break;
+    case 3:
+        SPEED = 130;
+        break;
+    case 4:
+        SPEED = 100;
+        break;
+    case 5:
+        SPEED = 80;
+        break;
+    case 6:
+        SPEED = 60;
+        break;
+    case 7:
+        SPEED = 50;
+        break;
+    case 8:
+        SPEED = 40;
+        break;
+    default:
+        gotoxy(14, 10);
+        cout << "Please enter a valid value!";
+        Sleep(3000);
+        system("cls");
+        goto SpeedLabel;
+    }
+    system("cls");
+    gotoxy(10, 8);
+    cout << "Setting succeded!";
+    Sleep(2000);
+    system("cls");
     return;
 }
 
@@ -107,6 +276,9 @@ void snake::setmap(int width, int height)
 
 void snake::GameInit()
 {
+    Direction = 4;
+    SScore=0;
+    LoopFlag=true;
     srand((int)time(NULL));
     setmap(MapWidth, MapHeight);
     SnakeHead = (SnakeBody *)malloc(sizeof(SnakeBody));
@@ -177,14 +349,40 @@ void snake::Moving()
 void snake::Eating()
 {
     Moving();
+    SScore += sprank;
     creatFood();
     return;
 }
 
 void snake::GameOver()
 {
-    while (1)
-        ;
+    char ifcontinue;
+    Sleep(800);
+    gotoxy(72, 8);
+    cout << "Game Over!";
+    Sleep(800);
+    gotoxy(72, 10);
+    cout << "Your Score is: " << SScore;
+    Sleep(800);
+    clean();
+    while (!getch())
+    {
+    }
+    system("cls");
+    scoredealer::FastIOScore(SScore, "snake.dat");
+    cout << "游戏结束，输入r\t再次游玩,输入其他键退出" << endl;
+    cin >> ifcontinue;
+    if (ifcontinue == 'r') RestartFlag=true;
+    else RestartFlag=false;
+    LoopFlag=false;
+    SnakeBody *jNode,*kNode;
+    jNode=SnakeHead;
+    while (jNode->next!=NULL){
+        kNode = jNode->next;
+        free(jNode);
+        jNode=kNode;
+    }
+    free(jNode);
     return;
 }
 
@@ -288,8 +486,11 @@ void snake::MainLoop()
     DWORD Time_start, Time_delta, Time_refresh, Time_lastframe;
     bool GotCommand = false;
     char KeyboardInput;
+    while (!kbhit())
+    {
+    }
     Time_lastframe = GetTickCount();
-    while (1)
+    while (LoopFlag)
     {
         Time_refresh = GetTickCount();
         Time_delta = Time_refresh - Time_lastframe;
@@ -302,6 +503,10 @@ void snake::MainLoop()
         if (kbhit() && !GotCommand)
         {
             KeyboardInput = getch();
+            if (KeyboardInput==27) {
+                LoopFlag = false;
+                RestartFlag=false;
+            }
             GotCommand = Reaction(KeyboardInput);
         }
     }

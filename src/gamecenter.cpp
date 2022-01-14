@@ -58,6 +58,12 @@ int main()
 {
     int cmd = 0;
 
+    HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO cursor;
+    cursor.bVisible = FALSE;
+    cursor.dwSize = sizeof(cursor);
+    SetConsoleCursorInfo(hOutput, &cursor);
+
     conif cfMainPage(5, lpMainPage, lpMainTitle, 48);
 
     while(true)
@@ -73,9 +79,7 @@ int main()
         }
         case 1:
         {   
-            snake::welcome();
-            snake::GameInit();
-            snake::MainLoop();
+            snake::snakemain();
             break;
         }
         case 2:
