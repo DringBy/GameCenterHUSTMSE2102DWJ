@@ -3,6 +3,7 @@
 #include "Snake.h"
 #include "mine.h"
 #include "autorank.h"
+#include "2048.h"
 
 char lpMainPage[][MAXOPTLEN] = {"2 0 4 8", "Ì°³ÔÉß", "É¨À×", "ÅÅÐÐ°ñ", "ÍË³ö"};
 char lpMainTitle[] = "GAMECENTER";
@@ -67,9 +68,7 @@ int main()
         {
         case 0:
         {   
-            //2048
-            printf("COMING SOON\n");
-            system("pause");
+            Play2048();
             break;
         }
         case 1:
