@@ -25,7 +25,8 @@ void ViewRank()
         case 0:
         {   
             //2048
-            printf("COMING SOON\n");
+            scoredealer::ReadFile("2048.dat");
+            scoredealer::PrintList(1);
             system("pause");
             system("cls");
             break;
