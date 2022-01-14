@@ -12,7 +12,7 @@ const int MapHeight = 26;
 const char Block[] = "■";
 const char FoodGraph[] = "⊙";
 int SPEED = 80, sprank = 5, SScore = 0;
-int Direction = 4; //蛇的朝向,1234分别对应上左下右
+int Direction; //蛇的朝向,1234分别对应上左下右
 bool StartFlag, FirstTime;
 bool LoopFlag, RestartFlag;
 
@@ -168,7 +168,8 @@ void snake::welcome()
         cursor.bVisible = TRUE;
         cursor.dwSize = sizeof(cursor);
         SetConsoleCursorInfo(hOutput, &cursor);
-        while (!kbhit())
+        clean();
+        while (!getch())
         {
         }
         system("cls");
@@ -186,7 +187,8 @@ MenuLabel:
     case 0:
         gotoxy(10, 8);
         cout << "请使用英文输入法，用wsad键控制上下左右！";
-        Sleep(3000);
+        Sleep(2000);
+        clean();
         return;
     case 1:
         setspeed();
@@ -232,10 +234,10 @@ SpeedLabel:
         SPEED = 60;
         break;
     case 7:
-        SPEED = 45;
+        SPEED = 50;
         break;
     case 8:
-        SPEED = 30;
+        SPEED = 40;
         break;
     default:
         gotoxy(14, 10);
@@ -274,6 +276,7 @@ void snake::setmap(int width, int height)
 
 void snake::GameInit()
 {
+    Direction = 4;
     SScore=0;
     LoopFlag=true;
     srand((int)time(NULL));
@@ -360,18 +363,26 @@ void snake::GameOver()
     Sleep(800);
     gotoxy(72, 10);
     cout << "Your Score is: " << SScore;
-    Sleep(400);
-    getch();
-    while (!kbhit)
+    Sleep(800);
+    clean();
+    while (!getch())
     {
     }
     system("cls");
     scoredealer::FastIOScore(SScore, "snake.dat");
-    cout << "Continue?(y/n)" << endl;
+    cout << "游戏结束，输入r\t再次游玩,输入其他键退出" << endl;
     cin >> ifcontinue;
-    if (ifcontinue == 'y') RestartFlag=true;
+    if (ifcontinue == 'r') RestartFlag=true;
     else RestartFlag=false;
     LoopFlag=false;
+    SnakeBody *jNode,*kNode;
+    jNode=SnakeHead;
+    while (jNode->next!=NULL){
+        kNode = jNode->next;
+        free(jNode);
+        jNode=kNode;
+    }
+    free(jNode);
     return;
 }
 
@@ -492,6 +503,10 @@ void snake::MainLoop()
         if (kbhit() && !GotCommand)
         {
             KeyboardInput = getch();
+            if (KeyboardInput==27) {
+                LoopFlag = false;
+                RestartFlag=false;
+            }
             GotCommand = Reaction(KeyboardInput);
         }
     }
