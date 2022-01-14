@@ -25,6 +25,7 @@ void printFood(int x, int y);       //打印食物
 void printSpace(int x, int y);      //打印空格
 void creatFood();                   //随机生成食物
 void welcome();                     //欢迎界面(未完成)
+void setspeed();                    //设置移动速度
 void GameInit();                    //游戏初始化
 void MainLoop();                    //主体循环
 void HeadJudge();                   //判断蛇头前方是什么

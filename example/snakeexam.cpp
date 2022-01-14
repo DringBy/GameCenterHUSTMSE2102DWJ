@@ -2,8 +2,6 @@
 
 int main()
 {
-    snake::welcome();
-    snake::GameInit();
-    snake::MainLoop();
+    snake::snakemain();
     return 0;
 }

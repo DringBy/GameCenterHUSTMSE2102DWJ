@@ -7,7 +7,6 @@ aux_source_directory(src sourcefiles)
 include(CTest)
 enable_testing()
 
-add_compile_options(-std=c++98)
 
 add_executable(GameCenter ${sourcefiles})
 
